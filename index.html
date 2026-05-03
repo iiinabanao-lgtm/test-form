@@ -1,4 +1,69 @@
-<!-- headタグ等は略 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
 <body>
-<div>Hello world.</div>
+
+<h3>イベント申込</h3>
+
+<label>イベント</label><br>
+<select id="event">
+  <option value="A001">ストレッチ教室</option>
+  <option value="A002">韓国語講座</option>
+  <option value="A003">ウクレレ講座</option>
+</select>
+<br><br>
+
+<label>名前</label><br>
+<input type="text" id="name">
+<br><br>
+
+<label>電話番号</label><br>
+<input type="tel" id="tel">
+<br><br>
+
+<button onclick="submitForm()">送信</button>
+
+<script>
+async function init() {
+  await liff.init({ liffId: "2009964671-Wet32u7g" });
+
+  if (!liff.isLoggedIn()) {
+    liff.login();
+  }
+}
+
+init();
+
+async function submitForm() {
+  const event = document.getElementById("event").value;
+  const name = document.getElementById("name").value;
+  const tel = document.getElementById("tel").value;
+
+  if (!name || !tel) {
+    alert("未入力があります");
+    return;
+  }
+
+  const message =
+`【イベント申込】
+イベントID: ${event}
+名前: ${name}
+電話: ${tel}`;
+
+  await liff.sendMessages([
+    {
+      type: "text",
+      text: message
+    }
+  ]);
+
+  alert("送信しました");
+  liff.closeWindow();
+}
+</script>
+
 </body>
+</html>
