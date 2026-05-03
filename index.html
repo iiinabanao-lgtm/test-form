@@ -10,7 +10,7 @@
 
 <script>
 async function run(){
-  await liff.init({ liffId: "ここにLIFF_ID" });
+  await liff.init({ liffId: "2009964671-Wet32u7g" });
 
   if (!liff.isLoggedIn()) {
     liff.login();
@@ -18,7 +18,7 @@ async function run(){
   }
 
   const profile = await liff.getProfile();
-  alert(profile.userId);
+  alert("userId: " + profile.userId);
 }
 </script>
 
