@@ -74,15 +74,22 @@
 <body>
 
 <div class="card">
-  <h3>イベント申込</h3>
+  <h3>ハーモニープラザ分館イベント申込</h3>
 
   <label>イベント</label>
   <select id="event">
-    <option value="A001">ストレッチ教室</option>
-    <option value="A002">韓国語講座</option>
+    <option value="A001">ボディケアストレッチ教室　第１・３火</option>
+    <option value="A002">ボディケアストレッチ教室　第２・４火</option>
     <option value="A003">ウクレレ講座</option>
   </select>
 
+　<label>開催月</label><br>
+　<select id="month">
+      <option value="2026-06">2026年6月</option>
+      <option value="2026-07">2026年7月</option>
+      <option value="2026-08">2026年8月</option>
+　</select>
+    
   <label>名前</label>
   <input type="text" id="name" placeholder="例：山田太郎">
 
@@ -118,9 +125,14 @@ init();
 async function submitForm() {
   if (!liffReady) return;
 
-  const event = document.getElementById("event").value;
-  const name = document.getElementById("name").value.trim();
-  const tel = document.getElementById("tel").value.trim();
+　const eventSelect = document.getElementById("event");
+
+　const event = eventSelect.value;
+　const eventName = eventSelect.options[eventSelect.selectedIndex].text;
+
+　const month = document.getElementById("month").value;
+　const name = document.getElementById("name").value.trim();
+　const tel = document.getElementById("tel").value.trim();
 
   if (!name || !tel) {
     alert("未入力があります");
@@ -128,11 +140,13 @@ async function submitForm() {
   }
 
   const message =
-`【イベント申込】
+`【イベント申込】　以下の通り申込を受け付けました。
 イベントID: ${event}
+イベント名: ${eventName}
+開催月: ${month}
 名前: ${name}
 電話: ${tel}`;
-
+    
   try {
     await liff.sendMessages([
       { type: "text", text: message }
