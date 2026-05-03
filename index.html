@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
+
 <body>
 
 <h3>イベント申込</h3>
@@ -14,36 +15,69 @@
   <option value="A002">韓国語講座</option>
   <option value="A003">ウクレレ講座</option>
 </select>
+
 <br><br>
 
 <label>名前</label><br>
 <input type="text" id="name">
+
 <br><br>
 
 <label>電話番号</label><br>
 <input type="tel" id="tel">
+
 <br><br>
 
-<button onclick="submitForm()">送信</button>
+<button id="submitBtn" onclick="submitForm()" disabled>
+  送信
+</button>
 
 <script>
-async function init() {
-  await liff.init({ liffId: "2009964671-Wet32u7g" });
+let liffReady = false;
 
-  if (!liff.isLoggedIn()) {
-    liff.login();
+// 初期化
+async function init() {
+  try {
+    await liff.init({ liffId: "2009964671-Wet32u7g" });
+
+    // LINEログイン確認
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return;
+    }
+
+    liffReady = true;
+    document.getElementById("submitBtn").disabled = false;
+
+  } catch (e) {
+    alert("初期化に失敗しました");
+    console.error(e);
   }
 }
 
 init();
 
+// 送信処理
 async function submitForm() {
-  const event = document.getElementById("event").value;
-  const name = document.getElementById("name").value;
-  const tel = document.getElementById("tel").value;
 
+  if (!liffReady) {
+    alert("読み込み中です");
+    return;
+  }
+
+  const event = document.getElementById("event").value;
+  const name = document.getElementById("name").value.trim();
+  const tel = document.getElementById("tel").value.trim();
+
+  // 未入力チェック
   if (!name || !tel) {
-    alert("未入力があります");
+    alert("未入力項目があります");
+    return;
+  }
+
+  // 電話番号簡易チェック（数字とハイフン許容）
+  if (!/^[0-9\-]+$/.test(tel)) {
+    alert("電話番号の形式が不正です");
     return;
   }
 
@@ -53,15 +87,21 @@ async function submitForm() {
 名前: ${name}
 電話: ${tel}`;
 
-  await liff.sendMessages([
-    {
-      type: "text",
-      text: message
-    }
-  ]);
+  try {
+    await liff.sendMessages([
+      {
+        type: "text",
+        text: message
+      }
+    ]);
 
-  alert("送信しました");
-  liff.closeWindow();
+    alert("送信しました");
+    liff.closeWindow();
+
+  } catch (e) {
+    alert("送信に失敗しました");
+    console.error(e);
+  }
 }
 </script>
 
