@@ -139,12 +139,17 @@ async function submitForm() {
     }
 
     const message =
-`申込データ
-${event}
-${eventName}
-${month}
-${name}
-${tel}`;
+const message =
+`【イベント申込を受け付けました】
+
+▼申込内容
+イベントID：　${event}
+イベント名：　${eventName}
+開催月：　${month}
+お名前：　${name}
+電話番号：${tel}
+
+※このメッセージは控えとして保存してください`;
 
     await liff.sendMessages([
       { type: "text", text: message }
