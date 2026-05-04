@@ -164,6 +164,7 @@ async function submitForm() {
     /* ① GAS送信 */
     const res = await fetch("https://script.google.com/macros/s/AKfycbybINhWhQWGDPWd3MV4krgVq-5lsjFCSRuPvcjuQ12tdhWVXqUqRjBW63wfqfahJ1Y/exec", {
       method: "POST",
+      mode: "no-cors", // ←これ追加
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
