@@ -151,15 +151,23 @@ async function submitForm() {
     tel
   };
 
-  try {
-    /* ① スプレッドシート保存 */
-    await fetch("https://script.google.com/macros/s/AKfycbybINhWhQWGDPWd3MV4krgVq-5lsjFCSRuPvcjuQ12tdhWVXqUqRjBW63wfqfahJ1Y/exec", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
+try {
+  const res = await fetch("https://script.google.com/macros/s/AKfycbybINhWhQWGDPWd3MV4krgVq-5lsjFCSRuPvcjuQ12tdhWVXqUqRjBW63wfqfahJ1Y/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  const text = await res.text();
+  alert(`status:${res.status}\nbody:${text}`);
+
+  if (!res.ok) throw new Error("HTTPエラー");
+
+} catch (e) {
+  alert("FETCH例外:\n" + e.message);
+  console.error(e);
+  return; // ← LINE送信は止める
+}
 
     /* ② LINE送信 */
     const message =
