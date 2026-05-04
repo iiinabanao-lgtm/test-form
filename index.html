@@ -125,34 +125,57 @@ init();
 async function submitForm() {
   if (!liffReady) return;
 
-　const eventSelect = document.getElementById("event");
+  const profile = await liff.getProfile();
+  const userId = profile.userId;
 
-　const event = eventSelect.value;
-　const eventName = eventSelect.options[eventSelect.selectedIndex].text;
+  const eventSelect = document.getElementById("event");
 
-　const month = document.getElementById("month").value;
-　const name = document.getElementById("name").value.trim();
-　const tel = document.getElementById("tel").value.trim();
+  const event = eventSelect.value;
+  const eventName = eventSelect.options[eventSelect.selectedIndex].text;
+
+  const month = document.getElementById("month").value;
+  const name = document.getElementById("name").value.trim();
+  const tel = document.getElementById("tel").value.trim();
 
   if (!name || !tel) {
     alert("未入力があります");
     return;
   }
 
-  const message =
-`【イベント申込】　以下の通り申込を受け付けました。
+  const payload = {
+    userId,
+    event,
+    eventName,
+    month,
+    name,
+    tel
+  };
+
+  try {
+    /* ① スプレッドシート保存 */
+    await fetch("https://script.google.com/macros/s/AKfycbybINhWhQWGDPWd3MV4krgVq-5lsjFCSRuPvcjuQ12tdhWVXqUqRjBW63wfqfahJ1Y/exec", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    /* ② LINE送信 */
+    const message =
+`【イベント申込】
+以下の通り申込を受け付けました。
 イベントID: ${event}
 イベント名: ${eventName}
 開催月: ${month}
 名前: ${name}
 電話: ${tel}`;
-    
-  try {
+
     await liff.sendMessages([
       { type: "text", text: message }
     ]);
 
-    alert("送信しました");
+    alert("申込完了しました");
     liff.closeWindow();
 
   } catch (e) {
