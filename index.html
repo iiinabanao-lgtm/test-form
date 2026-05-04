@@ -109,22 +109,17 @@
 let liffReady = false;
 
 async function init() {
-  try {
-    await liff.init({ liffId: "2009964671-Wet32u7g" });
+  await liff.init({ liffId: "2009964671-Wet32u7g" });
 
-    if (!liff.isLoggedIn()) {
-      liff.login();
-      return;
-    }
-
-    liffReady = true;
-    document.getElementById("submitBtn").disabled = false;
-
-  } catch (e) {
-    alert("LIFF初期化失敗\n" + e.message);
-    console.error(e);
+  if (!liff.isLoggedIn()) {
+    liff.login();
+    return;
   }
+
+  liffReady = true;
+  document.getElementById("submitBtn").disabled = false;
 }
+
 init();
 
 async function submitForm() {
@@ -158,22 +153,14 @@ async function submitForm() {
 
   try {
     /* ① スプレッドシート保存 */
-    const res = await fetch("https://script.google.com/macros/s/AKfycbybINhWhQWGDPWd3MV4krgVq-5lsjFCSRuPvcjuQ12tdhWVXqUqRjBW63wfqfahJ1Y/exec", {
+    await fetch("https://script.google.com/macros/s/AKfycbybINhWhQWGDPWd3MV4krgVq-5lsjFCSRuPvcjuQ12tdhWVXqUqRjBW63wfqfahJ1Y/exec", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(payload)
     });
-      
-  const text = await res.text();
-  alert(`status:${res.status}\nbody:${text}`);
 
-} catch (e) {
-  alert("FETCH例外:\n" + e.message);
-  console.error(e);
-  return;
-}
     /* ② LINE送信 */
     const message =
 `【イベント申込】
