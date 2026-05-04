@@ -82,8 +82,7 @@
     <option value="A002">ボディケアストレッチ教室　第２・４火</option>
     <option value="A003">ウクレレ講座</option>
   </select>
-
-　<label>開催月</label><br>
+  <label>開催月</label><br>
 　<select id="month">
       <option value="2026-06">2026年6月</option>
       <option value="2026-07">2026年7月</option>
@@ -136,54 +135,45 @@ init();
 async function submitForm() {
   if (!liffReady) return;
 
-  const profile = await liff.getProfile();
-  const userId = profile.userId;
+  try {
+    const profile = await liff.getProfile();
+    const userId = profile.userId;
 
-  const eventSelect = document.getElementById("event");
+    const eventSelect = document.getElementById("event");
+    const event = eventSelect.value;
+    const eventName = eventSelect.options[eventSelect.selectedIndex].text;
 
-  const event = eventSelect.value;
-  const eventName = eventSelect.options[eventSelect.selectedIndex].text;
+    const month = document.getElementById("month").value;
+    const name = document.getElementById("name").value.trim();
+    const tel = document.getElementById("tel").value.trim();
 
-  const month = document.getElementById("month").value;
-  const name = document.getElementById("name").value.trim();
-  const tel = document.getElementById("tel").value.trim();
+    if (!name || !tel) {
+      alert("未入力があります");
+      return;
+    }
 
-  if (!name || !tel) {
-    alert("未入力があります");
-    return;
-  }
+    const payload = {
+      userId,
+      event,
+      eventName,
+      month,
+      name,
+      tel
+    };
 
-  const payload = {
-    userId,
-    event,
-    eventName,
-    month,
-    name,
-    tel
-  };
+    /* ① GAS送信 */
+    const res = await fetch("https://script.google.com/macros/s/AKfycbybINhWhQWGDPWd3MV4krgVq-5lsjFCSRuPvcjuQ12tdhWVXqUqRjBW63wfqfahJ1Y/exec", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
 
-try {
-  const res = await fetch("https://script.google.com/macros/s/AKfycbybINhWhQWGDPWd3MV4krgVq-5lsjFCSRuPvcjuQ12tdhWVXqUqRjBW63wfqfahJ1Y/exec", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-
-  const text = await res.text();
-  alert(`status:${res.status}\nbody:${text}`);
-
-  if (!res.ok) throw new Error("HTTPエラー");
-
-} catch (e) {
-  alert("FETCH例外:\n" + e.message);
-  console.error(e);
-  return; // ← LINE送信は止める
-}
+    const text = await res.text();
+    alert("status:" + res.status + "\nbody:" + text);
 
     /* ② LINE送信 */
     const message =
 `【イベント申込】
-以下の通り申込を受け付けました。
 イベントID: ${event}
 イベント名: ${eventName}
 開催月: ${month}
@@ -198,7 +188,7 @@ try {
     liff.closeWindow();
 
   } catch (e) {
-    alert("送信に失敗しました");
+    alert("エラー:\n" + e.message);
     console.error(e);
   }
 }
