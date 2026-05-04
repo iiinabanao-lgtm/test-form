@@ -108,26 +108,15 @@
 let liffReady = false;
 
 async function init() {
-  alert("init開始");
+  await liff.init({ liffId: "2009964671-Wet32u7g" });
 
-  try {
-    await liff.init({ liffId: "2009964671-Wet32u7g" });
-    alert("init成功");
-
-    if (!liff.isLoggedIn()) {
-      alert("未ログイン");
-      liff.login();
-      return;
-    }
-
-    alert("ログイン済");
-
-    liffReady = true;
-    document.getElementById("submitBtn").disabled = false;
-
-  } catch (e) {
-    alert("LIFF initエラー\n" + e.message);
+  if (!liff.isLoggedIn()) {
+    liff.login();
+    return;
   }
+
+  liffReady = true;
+  document.getElementById("submitBtn").disabled = false;
 }
 
 init();
@@ -136,9 +125,6 @@ async function submitForm() {
   if (!liffReady) return;
 
   try {
-    const profile = await liff.getProfile();
-    const userId = profile.userId;
-
     const eventSelect = document.getElementById("event");
     const event = eventSelect.value;
     const eventName = eventSelect.options[eventSelect.selectedIndex].text;
@@ -152,48 +138,25 @@ async function submitForm() {
       return;
     }
 
-    const payload = {
-      userId,
-      event,
-      eventName,
-      month,
-      name,
-      tel
-    };
-
-    /* ① GAS送信 */
-    const res = await fetch("https://script.google.com/macros/s/AKfycbybINhWhQWGDPWd3MV4krgVq-5lsjFCSRuPvcjuQ12tdhWVXqUqRjBW63wfqfahJ1Y/exec", {
-      method: "POST",
-      mode: "no-cors", // ←これ追加
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    const text = await res.text();
-    alert("status:" + res.status + "\nbody:" + text);
-
-    /* ② LINE送信 */
     const message =
-`【イベント申込】
-イベントID: ${event}
-イベント名: ${eventName}
-開催月: ${month}
-名前: ${name}
-電話: ${tel}`;
+`申込データ
+${event}
+${eventName}
+${month}
+${name}
+${tel}`;
 
     await liff.sendMessages([
       { type: "text", text: message }
     ]);
 
-    alert("申込完了しました");
+    alert("送信しました");
     liff.closeWindow();
 
   } catch (e) {
-    alert("エラー:\n" + e.message);
-    console.error(e);
+    alert("送信失敗：" + e.message);
   }
 }
 </script>
-
 </body>
 </html>
