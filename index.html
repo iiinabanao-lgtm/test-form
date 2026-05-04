@@ -109,23 +109,25 @@
 let liffReady = false;
 
 async function init() {
+  alert("init開始");
+
   try {
     await liff.init({ liffId: "2009964671-Wet32u7g" });
+    alert("init成功");
 
     if (!liff.isLoggedIn()) {
+      alert("未ログイン");
       liff.login();
       return;
     }
+
+    alert("ログイン済");
 
     liffReady = true;
     document.getElementById("submitBtn").disabled = false;
 
   } catch (e) {
-    alert("LIFF initエラー:\n" + e.message);
-    console.error(e);
-
-    // デバッグ用：強制有効化
-    document.getElementById("submitBtn").disabled = false;
+    alert("LIFF initエラー\n" + e.message);
   }
 }
 
