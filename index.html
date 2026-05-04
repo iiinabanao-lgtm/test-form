@@ -109,17 +109,22 @@
 let liffReady = false;
 
 async function init() {
-  await liff.init({ liffId: "2009964671-Wet32u7g" });
+  try {
+    await liff.init({ liffId: "2009964671-Wet32u7g" });
 
-  if (!liff.isLoggedIn()) {
-    liff.login();
-    return;
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return;
+    }
+
+    liffReady = true;
+    document.getElementById("submitBtn").disabled = false;
+
+  } catch (e) {
+    alert("LIFF初期化失敗\n" + e.message);
+    console.error(e);
   }
-
-  liffReady = true;
-  document.getElementById("submitBtn").disabled = false;
 }
-
 init();
 
 async function submitForm() {
