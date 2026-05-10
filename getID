@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+<script>
+async function init() {
+  await liff.init({ liffId: "あなたのLIFF_ID" });
+
+  if (!liff.isLoggedIn()) {
+    liff.login();
+    return;
+  }
+
+  const profile = await liff.getProfile();
+  const userId = profile.userId;
+
+  // フォームへ渡す
+  const formUrl =
+    "https://docs.google.com/forms/d/e/1FAIpQLSdGkZX8JXpruU8Pw_VzpsrEo2Ixykazo6UZdMA9B3zbr_VSwA/viewform?usp=dialog" +
+    "?usp=pp_url&entry.123456789=" + encodeURIComponent(userId);
+
+  location.href = formUrl;
+}
+
+init();
+</script>
+</body>
+</html>
